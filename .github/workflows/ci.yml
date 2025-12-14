@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install system dependencies (for reportlab)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libjpeg-dev zlib1g-dev python3-dev
+
       - name: Install dependencies (verbose)
         continue-on-error: true
         run: |
