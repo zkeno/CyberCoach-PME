@@ -43,9 +43,10 @@ jobs:
         run: |
           echo "=== pip_install.log (last 200 lines) ==="
           tail -n 200 pip_install.log || true
-          # Only treat real package resolution failures as fatal (avoid matching benign 'error' text)
-          if grep -E "ERROR: (Could not find a version that satisfies the requirement|No matching distribution found)" pip_install.log; then
-            echo "Dependency installation failed; see pip_install.log artifact." >&2
+          # Treat package resolution failures and build/compilation failures as fatal
+          if grep -E "ERROR: (Could not find a version that satisfies the requirement|No matching distribution found|Command errored out|Could not build wheels for)" pip_install.log \
+             || grep -E "Failed building wheel|Failed to build|error: command 'gcc' failed" pip_install.log; then
+            echo "Dependency installation failed (resolution or build error); see pip_install.log artifact." >&2
             exit 1
           else
             echo "No fatal pip install errors found."
