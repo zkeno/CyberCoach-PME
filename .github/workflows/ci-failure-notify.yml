@@ -1,0 +1,70 @@
+name: CI failure notifier
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+jobs:
+  notify:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get pip-install-log artifact info
+        id: find_artifact
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const artifacts = await github.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId,
+            });
+            const art = artifacts.data.artifacts.find(a => a.name === 'pip-install-log');
+            if (!art) {
+              core.setOutput('found', 'false');
+            } else {
+              core.setOutput('found', 'true');
+              core.setOutput('archive_url', art.archive_download_url);
+            }
+
+      - name: Download and extract pip_install.log
+        if: steps.find_artifact.outputs.found == 'true'
+        env:
+          ARCHIVE_URL: ${{ steps.find_artifact.outputs.archive_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Downloading artifact..."
+          curl -L -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/zip" "$ARCHIVE_URL" -o pip_install_log.zip
+          unzip -o pip_install_log.zip -d pip_install_log || true
+          echo "Extracted files:"
+          ls -la pip_install_log || true
+
+      - name: Create issue with pip_install.log
+        if: steps.find_artifact.outputs.found == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LOGFILE="pip_install_log/pip_install.log"
+          if [ ! -f "$LOGFILE" ]; then
+            echo "pip_install.log not found; aborting issue creation.";
+            exit 0
+          fi
+          # Truncate to a reasonable size for issue body
+          BODY=$(head -c 60000 "$LOGFILE" | sed 's/"/\\"/g')
+          TITLE="CI pip install failed for run #${{ github.event.workflow_run.run_number }}"
+          PAYLOAD=$(python - <<PY
+import json,os,sys
+title=os.environ['TITLE'] if 'TITLE' in os.environ else 'CI pip install failure'
+body=sys.stdin.read()
+print(json.dumps({'title':title,'body':body}))
+PY
+          <<<"$BODY" TITLE="$TITLE" | \
+            curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Content-Type: application/json" -d @- "https://api.github.com/repos/${{ github.repository }}/issues" || true
+
+      - name: No pip_install.log found
+        if: steps.find_artifact.outputs.found == 'false'
+        run: |
+          echo "No pip-install-log artifact found for the failed run."
