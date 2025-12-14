@@ -58,6 +58,7 @@ streamlit run app.py
 
 Ouvrir `http://localhost:8501`
 
+<!-- ci: trigger run -->
 ## 📁 Structure du Projet
 
 ```
