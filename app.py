@@ -59,6 +59,96 @@ with st.sidebar:
     st.write("Email: support@cybercoach.fr")
     st.write("Web: www.cybercoach.fr")
 
+def render_home_page():
+    """Rendu de la page d'accueil"""
+    st.markdown(
+        """
+        # 🛡️ CyberCoach
+        ## Votre Assistant IA de Cybersécurité
+        
+        Bienvenue sur **CyberCoach**, la plateforme complète de formation et de 
+        sécurité informatique pour les PME. Transformez vos collaborateurs en première 
+        ligne de défense contre les cybermenaces.
+        
+        ---
+        
+        ## 🎯 Nos Offres
+        """
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.markdown(
+            """
+            ### 🆓 FREE
+            #### Chatbot Intelligent
+            - ✅ Accès illimité au Chatbot CyberCoach
+            - ✅ Questions sur la cybersécurité 24/7
+            - ✅ Réponses pédagogiques et bienveillantes
+            - ✅ Parfait pour commencer
+            
+            **Tarif: 0€/mois**
+            """
+        )
+
+    with col2:
+        st.markdown(
+            """
+            ### 💳 STANDARD
+            #### Quiz & Formation
+            - ✅ Quiz interactifs (Phishing, Mots de passe, etc.)
+            - ✅ Suivi des progrès par collaborateur
+            - ✅ Taux de complétion & Scores moyens par département
+            - ✅ Rapports de conformité
+            - ✅ Preuve de formation pour auditeurs
+            
+            **Tarif: 99€/mois**
+            """
+        )
+
+    with col3:
+        st.markdown(
+            """
+            ### 🚀 PREMIUM
+            #### Gestion du Risque
+            - ✅ Simulations de phishing réelles
+            - ✅ Tableau de Bord Exécutif (TRV)
+            - ✅ Mesure de résistance réelle
+            - ✅ Remédiation instantanée
+            - ✅ ROI sur investissement
+            
+            **Tarif: 499€/mois**
+            *(Bientôt disponible)*
+            """
+        )
+
+    st.markdown(
+        """
+        ---
+        
+        ## 🚀 Commencer Maintenant
+        
+        1. **Explorez le Chatbot** (Offre FREE) - Posez vos questions
+        2. **Lancez les Quiz** (Offre STANDARD) - Formez vos équipes
+        3. **Mesurez votre progression** - Suivi en temps réel
+        
+        ---
+        
+        ## 📊 Pourquoi CyberCoach ?
+        
+        - 🎯 **Simplifié**: Une seule plateforme pour tous vos besoins
+        - 🔐 **Sécurisé**: IA spécialisée en cybersécurité
+        - 📈 **Mesurable**: Rapports détaillés et KPIs clairs
+        - 💰 **Rentable**: ROI démontré contre les pertes liées aux cyberattaques
+        - 🌍 **Accessible**: Disponible 24/7 pour vos équipes
+        
+        ---
+        
+        **Transformez votre culture de sécurité dès aujourd'hui!**
+        """
+    )
+
 # Contenu principal
 if page == "🏠 Accueil":
     render_home_page()
