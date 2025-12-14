@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env.local
+.env.*
+.DS_Store
+*.sqlite3
+cybercoach.db
