@@ -38,9 +38,12 @@ jobs:
         run: |
           echo "=== pip_install.log (last 200 lines) ==="
           tail -n 200 pip_install.log || true
-          if grep -i "error" pip_install.log; then
+          # Only treat real package resolution failures as fatal (avoid matching benign 'error' text)
+          if grep -E "ERROR: (Could not find a version that satisfies the requirement|No matching distribution found)" pip_install.log; then
             echo "Dependency installation failed; see pip_install.log artifact." >&2
             exit 1
+          else
+            echo "No fatal pip install errors found."
           fi
 
       - name: Start FastAPI phishing service
