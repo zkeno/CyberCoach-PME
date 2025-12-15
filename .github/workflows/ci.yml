@@ -57,6 +57,19 @@ jobs:
           nohup python -m uvicorn phishing_service:app --host 127.0.0.1 --port 8000 &
           sleep 2
 
-      - name: Run tests
+      - name: Run tests (print full pytest output)
         run: |
-          pytest -q
+          # Run pytest and tee output to pytest.log so logs are visible and preserved
+          python -m pytest -vv 2>&1 | tee pytest.log
+          rc=${PIPESTATUS[0]}
+          # Print last 500 lines to ensure failing trace is visible in job logs
+          echo "=== pytest.log (last 500 lines) ==="
+          tail -n 500 pytest.log || true
+          exit $rc
+
+      - name: Upload pytest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-log
+          path: pytest.log
